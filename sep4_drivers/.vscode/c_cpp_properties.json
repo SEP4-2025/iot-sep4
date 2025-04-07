@@ -8,10 +8,10 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/include",
-                "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/src",
-                "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/lib/drivers",
-                "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/lib/Mocks",
+                "/Users/dimitar.nizamov/dev/via/SEP4/iot-sep4/sep4_drivers/include",
+                "/Users/dimitar.nizamov/dev/via/SEP4/iot-sep4/sep4_drivers/src",
+                "/Users/dimitar.nizamov/dev/via/SEP4/iot-sep4/sep4_drivers/lib/drivers",
+                "/Users/dimitar.nizamov/dev/via/SEP4/iot-sep4/sep4_drivers/lib/Mocks",
                 "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/cores/arduino",
                 "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/variants/mega",
                 "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
@@ -24,10 +24,10 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/include",
-                    "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/src",
-                    "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/lib/drivers",
-                    "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/lib/Mocks",
+                    "/Users/dimitar.nizamov/dev/via/SEP4/iot-sep4/sep4_drivers/include",
+                    "/Users/dimitar.nizamov/dev/via/SEP4/iot-sep4/sep4_drivers/src",
+                    "/Users/dimitar.nizamov/dev/via/SEP4/iot-sep4/sep4_drivers/lib/drivers",
+                    "/Users/dimitar.nizamov/dev/via/SEP4/iot-sep4/sep4_drivers/lib/Mocks",
                     "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/cores/arduino",
                     "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/variants/mega",
                     "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",

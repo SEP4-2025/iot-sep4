@@ -1,6 +1,7 @@
 #include "wifi.h"
 #include "uart.h"
 #include "light.h"
+#include "display.h"
 #include <util/delay.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,8 +33,6 @@ void console_rx(uint8_t _rx)
 
 int main()
 {
-    char welcome_text[] = "Welcome from SEP4 IoT hardware!\n";
-    char prompt_text[] = "Type text to send: ";
     wifi_init();
     light_init();
     sei();
