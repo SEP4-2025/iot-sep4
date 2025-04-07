@@ -1,0 +1,60 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/include",
+                "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/src",
+                "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/lib/drivers",
+                "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/lib/Mocks",
+                "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/variants/mega",
+                "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/include",
+                    "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/src",
+                    "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/lib/drivers",
+                    "/Users/dimitar.nizamov/dev/via/SEP4/sep4_drivers/lib/Mocks",
+                    "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/variants/mega",
+                    "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                    "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=60118",
+                "ARDUINO_AVR_MEGA2560",
+                "F_CPU=16000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "__AVR_ATmega2560__",
+                ""
+            ],
+            "cStandard": "gnu11",
+            "cppStandard": "gnu++11",
+            "compilerPath": "/Users/dimitar.nizamov/.platformio/packages/toolchain-atmelavr@1.70300.191015/bin/avr-gcc",
+            "compilerArgs": [
+                "-mmcu=atmega2560",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}

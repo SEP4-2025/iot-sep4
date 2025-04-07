@@ -1,0 +1,12 @@
+-./include
+-I/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/cores/arduino
+-I/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/variants/mega
+-I/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src
+-I/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/HID/src
+-I/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/SPI/src
+-I/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src
+-I/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/Wire/src
+-I/Users/dimitar.nizamov/.platformio/packages/toolchain-atmelavr@1.70300.191015/lib/gcc/avr/7.3.0/include
+-I/Users/dimitar.nizamov/.platformio/packages/toolchain-atmelavr@1.70300.191015/lib/gcc/avr/7.3.0/include-fixed
+-I/Users/dimitar.nizamov/.platformio/packages/toolchain-atmelavr@1.70300.191015/avr/include
+
