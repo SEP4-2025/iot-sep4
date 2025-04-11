@@ -4,13 +4,13 @@ const PORT = 1337;
 const HOST = "0.0.0.0";
 
 const server = net.createServer(
-    {
-        keepAlive: true,
-    },
+  {
+    keepAlive: true,
+  },
   (socket) => {
     console.log(
       "Client connected:",
-      socket.remoteAddress + ":" + socket.remotePort,
+      socket.remoteAddress + ":" + socket.remotePort
     );
 
     socket.on("data", (data) => {
@@ -25,7 +25,7 @@ const server = net.createServer(
     socket.on("error", (err) => {
       console.error("Socket error:", err);
     });
-  },
+  }
 );
 
 server.listen(PORT, HOST, () => {
