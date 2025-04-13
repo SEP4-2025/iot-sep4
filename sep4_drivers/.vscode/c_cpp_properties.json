@@ -8,6 +8,7 @@
         {
             "name": "PlatformIO",
             "includePath": [
+<<<<<<< HEAD
                 "/Users/dimitar.nizamov/dev/via/SEP4/iot-sep4/sep4_drivers/include",
                 "/Users/dimitar.nizamov/dev/via/SEP4/iot-sep4/sep4_drivers/src",
                 "/Users/dimitar.nizamov/dev/via/SEP4/iot-sep4/sep4_drivers/lib/drivers",
@@ -20,11 +21,26 @@
                 "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
                 "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
                 "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+=======
+                "/Users/plamenmichev/VIA/iot-sep4/sep4_drivers/include",
+                "/Users/plamenmichev/VIA/iot-sep4/sep4_drivers/src",
+                "/Users/plamenmichev/VIA/iot-sep4/sep4_drivers/lib/drivers",
+                "/Users/plamenmichev/VIA/iot-sep4/sep4_drivers/lib/Mocks",
+                "/Users/plamenmichev/VIA/iot-sep4/sep4_drivers/lib/MQTTPacket",
+                "/Users/plamenmichev/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "/Users/plamenmichev/.platformio/packages/framework-arduino-avr/variants/mega",
+                "/Users/plamenmichev/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "/Users/plamenmichev/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                "/Users/plamenmichev/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "/Users/plamenmichev/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                "/Users/plamenmichev/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+>>>>>>> main
                 ""
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
+<<<<<<< HEAD
                     "/Users/dimitar.nizamov/dev/via/SEP4/iot-sep4/sep4_drivers/include",
                     "/Users/dimitar.nizamov/dev/via/SEP4/iot-sep4/sep4_drivers/src",
                     "/Users/dimitar.nizamov/dev/via/SEP4/iot-sep4/sep4_drivers/lib/drivers",
@@ -37,6 +53,20 @@
                     "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
                     "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
                     "/Users/dimitar.nizamov/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+=======
+                    "/Users/plamenmichev/VIA/iot-sep4/sep4_drivers/include",
+                    "/Users/plamenmichev/VIA/iot-sep4/sep4_drivers/src",
+                    "/Users/plamenmichev/VIA/iot-sep4/sep4_drivers/lib/drivers",
+                    "/Users/plamenmichev/VIA/iot-sep4/sep4_drivers/lib/Mocks",
+                    "/Users/plamenmichev/VIA/iot-sep4/sep4_drivers/lib/MQTTPacket",
+                    "/Users/plamenmichev/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "/Users/plamenmichev/.platformio/packages/framework-arduino-avr/variants/mega",
+                    "/Users/plamenmichev/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "/Users/plamenmichev/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    "/Users/plamenmichev/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "/Users/plamenmichev/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                    "/Users/plamenmichev/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+>>>>>>> main
                     ""
                 ]
             },
@@ -51,7 +81,7 @@
             ],
             "cStandard": "gnu11",
             "cppStandard": "gnu++11",
-            "compilerPath": "/Users/dimitar.nizamov/.platformio/packages/toolchain-atmelavr@1.70300.191015/bin/avr-gcc",
+            "compilerPath": "/Users/plamenmichev/.platformio/packages/toolchain-atmelavr@1.70300.191015/bin/avr-gcc",
             "compilerArgs": [
                 "-mmcu=atmega2560",
                 ""
