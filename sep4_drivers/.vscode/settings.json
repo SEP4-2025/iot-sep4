@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "interrupt.h": "c",
-        "light.h": "c",
-        "display.h": "c"
-    }
-}
