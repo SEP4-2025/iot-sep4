@@ -2,6 +2,7 @@
 #include "uart.h"
 #include "light.h"
 #include "display.h"
+#include "MQTTPacket.h"
 #include <util/delay.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,16 +40,23 @@ static void my_event_cb(const struct event *evt, void *data)
     uart_send_string_blocking(USART_0, "Hello from callback!\n");
 }
 
-void send_light_data_to_tcp() 
+void loop()
 {
-    // Read the light
-    uint16_t light = light_read();
-    char light_str[128] = "";
+    char transmit_buf[200];
+    int transmit_buflen = sizeof(transmit_buf);
 
-    // Send the light data to the tcp server 
-    sprintf(light_str, "Light data: %d", light);
-    wifi_command_TCP_transmit((uint8_t *)light_str, strlen(light_str));
-    // uart_send_string_blocking(USART_0, "I am in a while loop!\n");
+    char topic[] = "light:reading";
+    uint16_t light_int = light_read();
+    char payload[20] = "";
+    sprintf(payload, "Light data:%d\n", light_int);
+    int transmit_len = create_mqtt_transmit_packet(
+        topic, payload, transmit_buf, transmit_buflen);
+
+    if (transmit_len > 0)
+    {
+        printf("MQTT Transmit packet created. Length: %d\n", transmit_len);
+    }
+    wifi_command_TCP_transmit(transmit_buf, transmit_len);
 }
 
 int main()
@@ -62,12 +70,12 @@ int main()
     uart_send_string_blocking(USART_0, "Hello from main!\n");
 
     // Connect to wifi network
-    WIFI_ERROR_MESSAGE_t wifi_res = wifi_command_join_AP("Plamen’s iPhone", "plamenisgreat");
+    WIFI_ERROR_MESSAGE_t wifi_res = wifi_command_join_AP("Dimitar_Nizamov", "dn22042002");
 
     // Connect to TCP server
     // Write callback function to type in the messag ein the uart
-    char* _buff = (uint8_t *)malloc(100);
-    wifi_command_create_TCP_connection("172.20.10.9", 1337, my_event_cb, _buff);
+    char *_buff = (uint8_t *)malloc(100);
+    wifi_command_create_TCP_connection("192.168.0.116", 1883, my_event_cb, _buff);
     // uart_send_string_blocking(USART_0, _buff);
 
     // Log the result of the wifi connection
@@ -84,14 +92,64 @@ int main()
     {
         uart_send_string_blocking(USART_0, "Connected to wifi!\n");
     }
-    
-
-    while (1) 
+    char connect_buf[200];
+    int connect_buflen = sizeof(connect_buf);
+    int connect_len = create_mqtt_connect_packet(connect_buf, connect_buflen);
+    if (connect_len > 0)
     {
-        send_light_data_to_tcp();
-        _delay_ms(1000);
+        printf("MQTT Connect packet created. Length: %d\n", connect_len);
     }
-        
-  
+    wifi_command_TCP_transmit(connect_buf, connect_len);
+    periodic_task_init_a(loop, 2000);
+    while (1)
+    {
+    }
+    // char disconnect_buf[200];
+    // int disconnect_buflen = sizeof(disconnect_buf);
+    // int disconnect_len =
+    //     create_mqtt_disconnect_packet(disconnect_buf, disconnect_buflen);
+    // if (disconnect_len > 0)
+    // {
+    //     printf("MQTT Disconnect packet created. Length: %d\n",
+    //            disconnect_len);
+    // }
     return 0;
+}
+
+// Function to create and serialize the MQTT connect packet
+int create_mqtt_connect_packet(char *buf, int buflen)
+{
+    MQTTPacket_connectData data =
+        MQTTPacket_connectData_initializer;
+    int len = 0;
+
+    data.clientID.cstring = "atmega2560";
+    data.keepAliveInterval = 20;
+    data.cleansession = 1;
+    data.MQTTVersion = 3;
+
+    len = MQTTSerialize_connect(buf, buflen, &data);
+    return len;
+}
+
+// Function to create and serialize the MQTT publish packet
+int create_mqtt_transmit_packet(
+    char *topic, char *payload, char *buf, int buflen)
+{
+    MQTTString topicString = MQTTString_initializer;
+    int payloadlen = strlen(payload);
+    int len = 0;
+
+    topicString.cstring = topic;
+    len = MQTTSerialize_publish(
+        buf, buflen, 0, 0, 0, 0, topicString, payload, payloadlen);
+    return len;
+}
+
+// Function to create and serialize the MQTT disconnect packet
+int create_mqtt_disconnect_packet(char *buf, int buflen)
+{
+    int len = 0;
+    len = MQTTSerialize_disconnect(buf, buflen);
+    return len;
 }
