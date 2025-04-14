@@ -13,7 +13,7 @@ The main folder is a PlatformIO project based on the [VIA drivers repository](ht
 
 ## mosquitto broker
 
-The `mosquitto.docker-compose.yaml` is a docker-compose file that creates a Mosquitto MQTT broker. It uses the [official Mosquitto image](https://hub.docker.com/_/eclipse-mosquitto) from Docker Hub and exposes the MQTT on port (1883). The `mosquitto` folder is mounted to the container for `log`, `data` and `conf`. The `conf/mosquitto.conf` file is a basic configuration file is the main configuration, by default it is configured to accept any connection without any form of authentication.
+The `mosquitto.docker-compose.yaml` is a docker-compose file that creates a Mosquitto MQTT broker. It uses the [official Mosquitto image](https://hub.docker.com/_/eclipse-mosquitto) from Docker Hub and exposes the MQTT on port (1883). The `mosquitto` folder is mounted to the container for `log`, `data` and `conf`. The `conf/mosquitto.conf` is the main configuration. By default it is configured to accept any connection without any form of authentication.
 
 ## node MQTT client
 
