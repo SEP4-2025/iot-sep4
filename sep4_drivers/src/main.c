@@ -63,14 +63,13 @@ int main() {
 
   // Connect to wifi network
   WIFI_ERROR_MESSAGE_t wifi_res =
-      wifi_command_join_AP("Dimitar's Pixel 7 Pro", "1234qwert");
+      wifi_command_join_AP("Dimitar_Nizamov", "dn22042002");
 
   // Connect to TCP server
   // Write callback function to type in the messag ein the uart
   char *_buff = malloc(100);
-  wifi_command_create_TCP_connection("10.121.138.177", 1883, my_event_cb,
+  wifi_command_create_TCP_connection("192.168.0.116", 1883, my_event_cb,
                                      _buff);
-  // uart_send_string_blocking(USART_0, _buff);
 
   // Log the result of the wifi connection
   char wifi_res_msg[128];
