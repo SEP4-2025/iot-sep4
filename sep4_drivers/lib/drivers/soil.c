@@ -60,5 +60,5 @@ uint16_t soil_read()
     // Read the 10-bit ADC value
 
     uint16_t adc_value = ADC;
-    return 1023 - adc_value;
+    return adc_value;
 }
