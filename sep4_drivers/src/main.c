@@ -1,6 +1,10 @@
 #include "display.h"
 #include "light.h"
 #include "mqtt.h"
+#include "MQTTPacket.h"
+#include "dht11.h"
+#include "display.h"
+#include "light.h"
 #include "periodic_task.h"
 #include "uart.h"
 #include "wifi.h"
@@ -9,6 +13,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <util/delay.h>
 
 static uint8_t _buff[100];
