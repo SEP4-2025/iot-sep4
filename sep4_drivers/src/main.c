@@ -1,10 +1,8 @@
-#include "display.h"
-#include "light.h"
-#include "mqtt.h"
 #include "MQTTPacket.h"
 #include "dht11.h"
 #include "display.h"
 #include "light.h"
+#include "mqtt.h"
 #include "periodic_task.h"
 #include "uart.h"
 #include "wifi.h"
@@ -41,19 +39,35 @@ static void my_event_cb(const void *evt, void *data) {
 
 // Function to create and serialize the MQTT connect packet
 void loop() {
-  unsigned char transmit_buf[200];
-  size_t transmit_buflen = sizeof(transmit_buf);
+  char transmit_buf[200];
+  int transmit_buflen = sizeof(transmit_buf);
+  char topic[] = "light:reading";
+  /* uint16_t adc = light_read(); */
+  /* float vol = adc * (5 / 1023.0); */
+  /* float res = vol * 10000.0 / (5 - vol); */
+  /* float lux = 500.0 / (res / 1000.0); */
+  /* int lux_int = (int)lux; */
+  /* char light_payload[100] = ""; */
+  /* sprintf(light_payload, "Light data:%d\n", lux_int); */
+  /* int transmit_len = create_mqtt_transmit_packet(topic, light_payload, */
+  /*                                                transmit_buf,
+   * transmit_buflen); */
+  /**/
+  uint8_t humidity_integer = 0;
+  uint8_t humidity_decimal = 0;
+  uint8_t temperature_integer = 0;
+  uint8_t temperature_decimal = 0;
+  DHT11_ERROR_MESSAGE_t dht11_res =
+      dht11_get(&humidity_integer, &humidity_decimal, &temperature_integer,
 
-  char *topic = "light:reading";
-  uint16_t light_int = light_read();
-  unsigned char payload[20] = "";
-  sprintf((char *)payload, "Light data:%d\n", light_int);
-  size_t transmit_len = create_mqtt_transmit_packet(
-      topic, payload, (unsigned char *)transmit_buf, transmit_buflen);
+                &temperature_decimal);
+  char dht_payload[100] = "";
+  sprintf(dht_payload, "Humidity: %d.%d, Temperature: %d.%d\n",
+          humidity_integer, humidity_decimal, temperature_integer,
+          temperature_decimal);
+  int transmit_len = create_mqtt_transmit_packet(topic, dht_payload,
+                                                 transmit_buf, transmit_buflen);
 
-  if (transmit_len > 0) {
-    printf("MQTT Transmit packet created. Length: %d\n", transmit_len);
-  }
   wifi_command_TCP_transmit(transmit_buf, transmit_len);
 }
 
@@ -68,13 +82,12 @@ int main() {
 
   // Connect to wifi network
   WIFI_ERROR_MESSAGE_t wifi_res =
-      wifi_command_join_AP("Dimitar_Nizamov", "dn22042002");
+      wifi_command_join_AP("Dimitar's Pixel 7 Pro", "1234qwert");
 
   // Connect to TCP server
   // Write callback function to type in the messag ein the uart
   char *_buff = malloc(100);
-  wifi_command_create_TCP_connection("192.168.0.116", 1883, my_event_cb,
-                                     _buff);
+  wifi_command_create_TCP_connection("10.121.138.177", 1883, my_event_cb, _buff);
 
   // Log the result of the wifi connection
   char wifi_res_msg[128];
