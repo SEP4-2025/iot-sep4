@@ -21,26 +21,28 @@ The `mqtt-node-client` folder contains a Node.js MQTT client that subscribes to 
 
 # How to run
 
-You need to have Docker installed on your machine. You can run the Mosquitto broker using the following command:
+* You need to have Docker installed on your machine. You can run the Mosquitto broker using the following command:
 
-```bash
-docker-compose -f mosquitto.docker-compose.yaml up
-```
-Then you can run the Node.js MQTT client using the following command:
+    ```bash
+    docker-compose -f mosquitto.docker-compose.yaml up
+    ```
+* Then you can run the Node.js MQTT client using the following command:
 
-```bash
-cd mqtt-node-client
-npm install
-node index.js
-```
+    ```bash
+    cd mqtt-node-client
+    npm install
+    node index.js
+    ```
 
-This will install the required dependencies and run the client. You should see a log in the container that the mqttjs client is connected.
+* This will install the required dependencies and run the client. You should see a log in the container that the mqttjs client is connected.
 
-Finally you should have the ATMega2560 connected to your computer and the PlatformIO project open in VSCode (you should open VSCode in `sep4_drivers` as the root). 
+    Finally you should have the ATMega2560 connected to your computer and the PlatformIO project open in VSCode (you should open VSCode in `sep4_drivers` as the root). 
 
-Once you have it open you need to navigate to the `main.c` file and change:
+    Once you have it open you need to navigate to the `main.c` file and change:
 
-* The wifi credentials in the `wifi_command_join_AP()` to your wifi credentials - SSID and Password
-* The broker host and port in the `wifi_command_create_TCP_connection()` function.
+    * The wifi credentials in the `wifi_command_join_AP()` to your wifi credentials - SSID and Password
+    * The broker host and port in the `wifi_command_create_TCP_connection()` function.
 
-After that you upload the code to the ATMega2560 and open the serial monitor. You should see the connection to the broker and the data being published to the topics. The Node.js client should also receive the data and print it to the console.
+    After that you upload the code to the ATMega2560 and open the serial monitor. You should see the connection to the broker and the data being published to the topics. The Node.js client should also receive the data and print it to the console.
+    In place of the node client you can use any client that supports MQTT. You see a lot of clients for almost any programming language [here](https://mqtt.org/software/). Just make sure to subscribe to the topics that are being published by the ATMega2560.
+
