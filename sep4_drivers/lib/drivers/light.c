@@ -65,8 +65,7 @@ uint16_t light_read(void)
 
     // Read the 10-bit ADC value
     // ADCL must be read first, then ADCH
-    uint16_t adc_value = ADCL;
-    adc_value |= (ADCH << 8);
+    uint16_t adc_value = ADC;
 
     return adc_value;
 }
