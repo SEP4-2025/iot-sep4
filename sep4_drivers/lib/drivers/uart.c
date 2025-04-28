@@ -415,6 +415,51 @@ ISR(USART3_UDRE_vect)
     }
 }
 
+uint8_t uart_receive_blocking(USART_t usart)
+{
+    switch (usart)
+    {
+    case USART_0:
+        // Wait until data is received
+        while (!(UCSR0A & (1 << RXC0)))
+        {
+            // Do nothing - blocking
+        }
+        // Return received data from buffer
+        return UDR0;
+
+    case USART_1:
+        while (!(UCSR1A & (1 << RXC1)))
+        {
+        }
+        return UDR1;
+
+    case USART_2:
+        while (!(UCSR2A & (1 << RXC2)))
+        {
+        }
+        return UDR2;
+
+    case USART_3:
+        while (!(UCSR3A & (1 << RXC3)))
+        {
+        }
+        return UDR3;
+
+    default:
+        // Handle error: invalid USART choice
+        return 0; // or some error code
+    }
+}
+
+void uart_receive_array_blocking(USART_t usart, uint8_t *buffer, uint16_t length)
+{
+    for (uint16_t i = 0; i < length; i++)
+    {
+        buffer[i] = uart_receive_blocking(usart);
+    }
+}
+
 #endif
 
 #endif//EXCLUDE_UART

@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <util/delay.h>
+#include "MQTTPacket.h"
+#include <string.h>
 
 static uint8_t _buff[100];
 static uint8_t _index = 0;
@@ -40,7 +42,7 @@ static void my_event_cb(const void *evt, void *data) {
  * @brief Function to calculate the moisture percentage from the ADC value
  *
  * This function takes the ADC value from the soil moisture sensor and
- * calculates the moisture percentage based on a linear mapping.
+ * calculates the moisture percentage based on a linear mapping.    
  *
  * @param sensor_value The ADC value from the soil moisture sensor
  * @return The calculated moisture percentage (0-100)
@@ -55,7 +57,7 @@ void loop() {
   char light_transmit_buf[200];
   int light_transmit_buflen = sizeof(light_transmit_buf);
   char light_topic[] = "light:reading";
-  uint16_t light_adc = soil_read();
+  uint16_t light_adc = light_read();
   int moisture_percentage = calculate_moisture_percentage(light_adc);
   /* float vol = light_adc * (5 / 1023.0); */
   /* float res = vol * 10000.0 / (5 - vol); */
@@ -86,6 +88,76 @@ void loop() {
    * transmit_buflen); */
 }
 
+void receive_loop()
+{
+    
+    uart_send_string_blocking(USART_0, "Start pump!\n");
+    uint8_t buffer[256];
+    uint16_t receivedLength = 0;
+    unsigned char dup, retained;
+    int qos;
+    unsigned short packetId;
+    MQTTString topicName;
+    unsigned char *payload;
+    int payloadLen;
+
+    WIFI_ERROR_MESSAGE_t error = wifi_command_TCP_receive(buffer, sizeof(buffer), &receivedLength);
+    if (error != WIFI_OK)
+        return;
+
+    int rc = MQTTDeserialize_publish(&dup, &qos, &retained, &packetId, &topicName, &payload, &payloadLen, buffer, receivedLength);
+    if (rc != 1)
+        return;
+
+}
+
+
+WIFI_ERROR_MESSAGE_t mqtt_subscribe_to_pump_command()
+{
+    uart_send_string_blocking(USART_0, "mqqt subscribe to pump command start!\n");
+    uint8_t buffer[128];
+    MQTTString topic = MQTTString_initializer;
+    topic.cstring = "pump:command";
+    uint16_t packetId = 1; // Can be incremented if you send multiple subscriptions
+    int qos = 1;           // QoS level 1 (as expected)
+
+    int len = MQTTSerialize_subscribe(buffer, sizeof(buffer), 0, packetId, 1, &topic, &qos);
+    if (len <= 0)
+        return WIFI_FAIL;
+
+        
+    uart_send_string_blocking(USART_0, "mqqt subscribe to pump command end!\n");
+    // Send the subscribe packet over TCP
+    return wifi_command_TCP_transmit(buffer, len);
+}
+
+WIFI_ERROR_MESSAGE_t mqtt_suback_receive()
+{
+    uint8_t buffer[64];
+    unsigned short packetId;
+    int count;
+    int grantedQoS[1]; // We only subscribe to one topic
+    int rc;
+
+    // Receive SUBACK from the server
+    WIFI_ERROR_MESSAGE_t error = wifi_command_TCP_receive(buffer, sizeof(buffer));
+    if (error != WIFI_OK)
+        return error;
+
+    // Deserialize the SUBACK packet
+    rc = MQTTDeserialize_suback(&packetId, 1, &count, grantedQoS, buffer, sizeof(buffer));
+    if (rc != 1)
+        return WIFI_FAIL;
+
+    // Optionally check if QoS is granted
+    if (grantedQoS[0] == 0x80) // 0x80 = failure in MQTT
+        return WIFI_FAIL;
+
+    return WIFI_OK;
+}
+
+
+
 int main() {
   // Init wifi and light
   wifi_init();
@@ -98,12 +170,12 @@ int main() {
 
   // Connect to wifi network
   WIFI_ERROR_MESSAGE_t wifi_res =
-      wifi_command_join_AP("Dimitar's Pixel 7 Pro", "1234qwert");
+      wifi_command_join_AP("Marius iPhone", "pidaras69");
 
   // Connect to TCP server
   // Write callback function to type in the messag ein the uart
   char *_buff = malloc(100);
-  wifi_command_create_TCP_connection("10.121.138.177", 1883, my_event_cb,
+  wifi_command_create_TCP_connection("172.20.10.4", 1883, my_event_cb,
                                      _buff);
 
   // Log the result of the wifi connection
@@ -124,7 +196,30 @@ int main() {
     printf("MQTT Connect packet created. Length: %d\n", connect_len);
   }
   wifi_command_TCP_transmit(connect_buf, connect_len);
+
+  WIFI_ERROR_MESSAGE_t subscribe_message = mqtt_subscribe_to_pump_command();
+
+   if (subscribe_message != WIFI_OK)
+  {
+    uart_send_string_blocking(USART_0, "Unable to send subscribe packet!\n");
+  }
+  else {
+    uart_send_string_blocking(USART_0, "Sent subscribe packet!\n");
+  }
+
+  subscribe_message = mqtt_suback_receive();
+
+  if (subscribe_message != WIFI_OK)
+  {
+    uart_send_string_blocking(USART_0, "Unable to receive suback packet!\n");
+  }
+  else {
+    uart_send_string_blocking(USART_0, "Received suback!\n");
+  }
+  
+
   periodic_task_init_a(loop, 2000);
+//   periodic_task_init_a(receive_loop, 2000);
   while (1) {
   }
   // char disconnect_buf[200];
