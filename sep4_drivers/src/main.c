@@ -182,28 +182,6 @@ void loop()
    * transmit_buflen); */
 }
 
-// void receive_loop()
-// {
-
-//   uart_send_string_blocking(USART_0, "Start pump!\n");
-//   uint8_t buffer[256];
-//   uint16_t receivedLength = 0;
-//   unsigned char dup, retained;
-//   int qos;
-//   unsigned short packetId;
-//   MQTTString topicName;
-//   unsigned char *payload;
-//   int payloadLen;
-
-//   WIFI_ERROR_MESSAGE_t error = wifi_command_TCP_receive(buffer, sizeof(buffer), &receivedLength);
-//   if (error != WIFI_OK)
-//     return;
-
-//   int rc = MQTTDeserialize_publish(&dup, &qos, &retained, &packetId, &topicName, &payload, &payloadLen, buffer, receivedLength);
-//   if (rc != 1)
-//     return;
-// }
-
 WIFI_ERROR_MESSAGE_t mqtt_subscribe_to_pump_command()
 {
   uart_send_string_blocking(USART_0, "mqqt subscribe to pump command start!\n");
@@ -222,30 +200,6 @@ WIFI_ERROR_MESSAGE_t mqtt_subscribe_to_pump_command()
   return wifi_command_TCP_transmit(buffer, len);
 }
 
-// WIFI_ERROR_MESSAGE_t mqtt_suback_receive()
-// {
-//   uint8_t buffer[64];
-//   unsigned short packetId;
-//   int count;
-//   int grantedQoS[1]; // We only subscribe to one topic
-//   int rc;
-
-//   // Receive SUBACK from the server
-//   WIFI_ERROR_MESSAGE_t error = wifi_command_TCP_receive(buffer, sizeof(buffer));
-//   if (error != WIFI_OK)
-//     return error;
-
-//   // Deserialize the SUBACK packet
-//   rc = MQTTDeserialize_suback(&packetId, 1, &count, grantedQoS, buffer, sizeof(buffer));
-//   if (rc != 1)
-//     return WIFI_FAIL;
-
-//   // Optionally check if QoS is granted
-//   if (grantedQoS[0] == 0x80) // 0x80 = failure in MQTT
-//     return WIFI_FAIL;
-
-//   return WIFI_OK;
-// }
 
 int main()
 {
@@ -303,18 +257,8 @@ int main()
     uart_send_string_blocking(USART_0, "Sent subscribe packet!\n");
   }
 
-  // subscribe_message = mqtt_suback_receive();
-
-  // if (subscribe_message != WIFI_OK)
-  // {
-  //   uart_send_string_blocking(USART_0, "Unable to receive suback packet!\n");
-  // }
-  // else {
-  //   uart_send_string_blocking(USART_0, "Received suback!\n");
-  // }
 
   periodic_task_init_a(loop, 2000);
-  //   periodic_task_init_a(receive_loop, 2000);
   while (1)
   {
   }
