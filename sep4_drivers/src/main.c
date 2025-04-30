@@ -16,6 +16,8 @@
 #include <string.h>
 
 static uint8_t _buff[100];
+// static char callback_buff[256];
+static unsigned char callback_buff[256];
 static uint8_t _index = 0;
 volatile static bool _done = false;
 void console_rx(uint8_t _rx)
@@ -38,97 +40,86 @@ void console_rx(uint8_t _rx)
   }
 }
 
-// static void my_event_cb(const void *evt, void *data) {
-//   /* do stuff and things with the event */
-//   uart_send_string_blocking(USART_0, "Hello from callback!\n");
-// }
-
 void my_event_cb()
 {
-    // _buff points to the received message
-    unsigned char* buf = (unsigned char*)_buff;
-    int buflen = strlen(_buff);  // or keep track separately if binary data
-    unsigned char packet_type = buf[0] >> 4;
-    uart_send_string_blocking(USART_0, _buff);
+    // Check if we have valid data
+    if (callback_buff[0] == 0) {
+        uart_send_string_blocking(USART_0, "Empty buffer received\n");
+        return;
+    }
 
-    switch (packet_type)
-    {
-        case CONNACK:
-        {
-            unsigned char sessionPresent, connack_rc;
-            char msg_buf[100];
-            if (MQTTDeserialize_connack(&sessionPresent, &connack_rc, buf, buflen) == 1) {
-                sprintf(msg_buf, "MQTT: CONNACK received, sessionPresent=%d, returnCode=%d\n", sessionPresent, connack_rc);
-                uart_send_string_blocking(USART_0, msg_buf);
-            } else {
-                uart_send_string_blocking(USART_0, "MQTT: Failed to deserialize CONNACK\n");
-            }
+    // Extract MQTT packet type from first byte
+    unsigned char packet_type = (callback_buff[0] >> 4) & 0x0F;
+    
+    // Print packet type in a meaningful way
+    char msg_buf[250];
+    sprintf(msg_buf, "MQTT packet received - Type: %d\n", packet_type);
+    uart_send_string_blocking(USART_0, msg_buf);
+  
+    
+    // Process specific MQTT packet types
+    switch (packet_type) {
+        case 2: // MQTT CONNACK
+            uart_send_string_blocking(USART_0, "RECEIVED CONNACK\n");
             break;
-        }
 
-        case SUBACK:
-        {
-            unsigned short packetid;
-            int count;
-            int grantedQoSs[10];
-            char msg_buf[100];
-
-            if (MQTTDeserialize_suback(&packetid, 10, &count, grantedQoSs, buf, buflen) == 1) {
-                sprintf(msg_buf, "MQTT: SUBACK received for packetId=%d with %d QoS entries\n", packetid, count);
-                uart_send_string_blocking(USART_0, msg_buf);
-
-                for (int i = 0; i < count; ++i) {
-                    sprintf(msg_buf, "  Granted QoS: %d\n", grantedQoSs[i]);
+            case 3: // MQTT PUBLISH
+            {
+                unsigned char dup = 0;
+                int qos = 0;
+                unsigned char retained = 0;
+                unsigned short packetid = 0;
+                MQTTString topicName = {0};
+                unsigned char* payload = NULL;
+                int payloadlen = 0;
+                
+                int result = MQTTDeserialize_publish(&dup, &qos, &retained, &packetid, 
+                                                  &topicName, &payload, &payloadlen, 
+                                                  callback_buff, 256);
+                
+                if (result == 1) {
+                    // Create a null-terminated string for the topic
+                    char topic[64] = {0};
+                    if (topicName.lenstring.len < sizeof(topic)) {
+                        memcpy(topic, topicName.lenstring.data, topicName.lenstring.len);
+                        topic[topicName.lenstring.len] = '\0';
+                    }
+                    
+                    // Create a null-terminated string for the payload
+                    char payload_str[128] = {0};
+                    if (payloadlen < sizeof(payload_str)) {
+                        memcpy(payload_str, payload, payloadlen);
+                        payload_str[payloadlen] = '\0';
+                    }
+                    
+                    sprintf(msg_buf, "PUBLISH: Topic='%s', Payload='%s', QoS=%d\n", 
+                            topic, payload_str, qos);
                     uart_send_string_blocking(USART_0, msg_buf);
+                    
+                    // Check if this is the pump command topic
+                    if (strcmp(topic, "pump:command") == 0) {
+                        if (strcmp(payload_str, "start") == 0) {
+                            uart_send_string_blocking(USART_0, "Command received: Turn pump ON\n");
+
+                            // Add code to turn on the pump here
+                        }
+                    }
+                } else {
+                    uart_send_string_blocking(USART_0, "Failed to parse PUBLISH packet\n");
                 }
-            } else {
-                uart_send_string_blocking(USART_0, "MQTT: Failed to deserialize SUBACK\n");
+                break;
             }
+    
+            
+        case 9: // MQTT SUBACK
+            uart_send_string_blocking(USART_0, "RECEIVED SUBACK\n");
             break;
-        }
-
-        case PUBLISH:
-        {
-            unsigned char dup, retained;
-            int qos, payloadlen;
-            unsigned short packetid;
-            MQTTString topicName;
-            unsigned char* payload;
-            char msg_buf[200];
-
-            if (MQTTDeserialize_publish(&dup, &qos, &retained, &packetid,
-                                        &topicName, &payload, &payloadlen, buf, buflen) == 1) {
-                sprintf(msg_buf, "MQTT: PUBLISH received on topic ");
-                uart_send_string_blocking(USART_0, msg_buf);
-
-                // Send topic
-                for (int i = 0; i < topicName.lenstring.len; ++i)
-                uart_send_blocking(USART_0, topicName.lenstring.data[i]);
-
-                uart_send_string_blocking(USART_0, ": ");
-
-                // Send payload
-                for (int i = 0; i < payloadlen; ++i)
-                    uart_send_blocking(USART_0, payload[i]);
-
-                uart_send_string_blocking(USART_0, "\n");
-
-            } else {
-                uart_send_string_blocking(USART_0, "MQTT: Failed to deserialize PUBLISH\n");
-            }
-            break;
-        }
-
+            
         default:
-        {
-            char msg_buf[50];
-            sprintf(msg_buf, "MQTT: Unknown packet type: %d\n", packet_type);
+            sprintf(msg_buf, "Unhandled packet type: %d\n", packet_type);
             uart_send_string_blocking(USART_0, msg_buf);
-            break;
-        }
     }
 }
-
 
 /**
  * @brief Function to calculate the moisture percentage from the ADC value
@@ -184,7 +175,6 @@ void loop()
 
 WIFI_ERROR_MESSAGE_t mqtt_subscribe_to_pump_command()
 {
-  uart_send_string_blocking(USART_0, "mqqt subscribe to pump command start!\n");
   uint8_t buffer[128];
   MQTTString topic = MQTTString_initializer;
   topic.cstring = "pump:command";
@@ -195,7 +185,6 @@ WIFI_ERROR_MESSAGE_t mqtt_subscribe_to_pump_command()
   if (len <= 0)
     return WIFI_FAIL;
 
-  uart_send_string_blocking(USART_0, "mqqt subscribe to pump command end!\n");
   // Send the subscribe packet over TCP
   return wifi_command_TCP_transmit(buffer, len);
 }
@@ -214,13 +203,13 @@ int main()
 
   // Connect to wifi network
   WIFI_ERROR_MESSAGE_t wifi_res =
-      wifi_command_join_AP("Marius iPhone", "pidaras69");
+      wifi_command_join_AP("Marius iPhone", "password123");
 
   // Connect to TCP server
   // Write callback function to type in the messag ein the uart
-  char *_buff = malloc(100);
+  // callback_buff = malloc(100);
   wifi_command_create_TCP_connection("172.20.10.4", 1883, my_event_cb,
-                                     _buff);
+                                     callback_buff);
 
   // Log the result of the wifi connection
   char wifi_res_msg[128];

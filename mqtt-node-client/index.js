@@ -3,13 +3,13 @@ const client = mqtt.connect("mqtt://localhost:1883");
 
 // .on connect -> waits until the connection is actually established    
 client.on("connect", () => {
-  client.publish("pump:command", "start", { qos: 1, retain: true }, (err) => {
-    if (err) {
-      console.error("Failed to publish message:", err);
-    } else {
-      console.log(`Sent 'start' command to 'pump:command'`);
-    }
-  });
+  // client.publish("pump:command", "start", { qos: 1, retain: true }, (err) => {
+  //   if (err) {
+  //     console.error("Failed to publish message:", err);
+  //   } else {
+  //     console.log(`Sent 'start' command to 'pump:command'`);
+  //   }
+  // });
 
   client.subscribe(
     {
@@ -25,6 +25,38 @@ client.on("connect", () => {
       }
     }
   );
+
+  // setTimeout(() => {
+  //   client.publish("pump:command", "start", { qos: 1, retain: true }, (err) => {
+  //     if (err) {
+  //       console.error("Failed to publish message:", err);
+  //     } else {
+  //       console.log(`Sent 'start' command to 'pump:command'`);
+  //     }
+  //   });
+  // }, 20000);
+
+  setTimeout(() => {
+    let count = 0;
+    const interval = setInterval(() => {
+      if (count >= 5) {
+        clearInterval(interval);
+        console.log("Finished sending 5 messages.");
+        return;
+      }
+
+      const message = "start"
+      client.publish("pump:command", message, { qos: 1, retain: true }, (err) => {
+        if (err) {
+          console.error(`Failed to publish message ${count + 1}:`, err);
+        } else {
+          console.log(`Published '${message}' to 'pump:command'`);
+        }
+      });
+
+      count++;
+    }, 1000); // Send every 1 second
+  }, 20000);
 
   client.on("message", (topic, message) => {
     const msg = message.toString();
