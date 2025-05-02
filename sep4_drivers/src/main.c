@@ -14,6 +14,7 @@
 #include <util/delay.h>
 #include "MQTTPacket.h"
 #include <string.h>
+#include "water_pump.h"
 
 static uint8_t _buff[100];
 // static char callback_buff[256];
@@ -190,75 +191,89 @@ WIFI_ERROR_MESSAGE_t mqtt_subscribe_to_pump_command()
 }
 
 
-int main()
-{
-  // Init wifi and light
-  wifi_init();
-  light_init();
-  soil_init();
+// int main()
+// {
+//   // Init wifi and light
+//   wifi_init();
+//   light_init();
+//   soil_init();
 
-  // Writing in the console
-  uart_init(USART_0, 9600, console_rx);
-  uart_send_string_blocking(USART_0, "Hello from main!\n");
+//   // Writing in the console
+//   uart_init(USART_0, 9600, console_rx);
+//   uart_send_string_blocking(USART_0, "Hello from main!\n");
 
-  // Connect to wifi network
-  WIFI_ERROR_MESSAGE_t wifi_res =
-      wifi_command_join_AP("Marius iPhone", "password123");
+//   // Connect to wifi network
+//   WIFI_ERROR_MESSAGE_t wifi_res =
+//       wifi_command_join_AP("Marius iPhone", "password123");
 
-  // Connect to TCP server
-  // Write callback function to type in the messag ein the uart
-  // callback_buff = malloc(100);
-  wifi_command_create_TCP_connection("172.20.10.4", 1883, my_event_cb,
-                                     callback_buff);
+//   // Connect to TCP server
+//   // Write callback function to type in the messag ein the uart
+//   // callback_buff = malloc(100);
+//   wifi_command_create_TCP_connection("172.20.10.4", 1883, my_event_cb,
+//                                      callback_buff);
 
-  // Log the result of the wifi connection
-  char wifi_res_msg[128];
-  sprintf(wifi_res_msg, "Error: %d \n", wifi_res);
-  uart_send_string_blocking(USART_0, wifi_res_msg);
+//   // Log the result of the wifi connection
+//   char wifi_res_msg[128];
+//   sprintf(wifi_res_msg, "Error: %d \n", wifi_res);
+//   uart_send_string_blocking(USART_0, wifi_res_msg);
 
-  if (wifi_res != WIFI_OK)
-  {
-    uart_send_string_blocking(USART_0, "Error connecting to wifi!\n");
-    return -1;
+//   if (wifi_res != WIFI_OK)
+//   {
+//     uart_send_string_blocking(USART_0, "Error connecting to wifi!\n");
+//     return -1;
+//   }
+//   else
+//   {
+//     uart_send_string_blocking(USART_0, "Connected to wifi!\n");
+//   }
+//   unsigned char connect_buf[200];
+//   int connect_buflen = sizeof(connect_buf);
+//   int connect_len = create_mqtt_connect_packet(connect_buf, connect_buflen);
+//   if (connect_len > 0)
+//   {
+//     uart_send_string_blocking(USART_0, "MQTT Connect packet created!\n");
+//   }
+//   wifi_command_TCP_transmit(connect_buf, connect_len);
+
+//   _delay_ms(5000);
+//   WIFI_ERROR_MESSAGE_t subscribe_message = mqtt_subscribe_to_pump_command();
+
+//   if (subscribe_message != WIFI_OK)
+//   {
+//     uart_send_string_blocking(USART_0, "Unable to send subscribe packet!\n");
+//   }
+//   else
+//   {
+//     uart_send_string_blocking(USART_0, "Sent subscribe packet!\n");
+//   }
+
+
+//   periodic_task_init_a(loop, 2000);
+//   while (1)
+//   {
+//   }
+//   // char disconnect_buf[200];
+//   // int disconnect_buflen = sizeof(disconnect_buf);
+//   // int disconnect_len =
+//   //     create_mqtt_disconnect_packet(disconnect_buf, disconnect_buflen);
+//   // if (disconnect_len > 0)
+//   // {
+//   //     printf("MQTT Disconnect packet created. Length: %d\n",
+//   //            disconnect_len);
+//   // }
+//   return 0;
+// }
+
+int main() {
+  pump_init();
+    
+  sei();
+    
+  pump_run(5000);
+    
+  while(1) {
+    
   }
-  else
-  {
-    uart_send_string_blocking(USART_0, "Connected to wifi!\n");
-  }
-  unsigned char connect_buf[200];
-  int connect_buflen = sizeof(connect_buf);
-  int connect_len = create_mqtt_connect_packet(connect_buf, connect_buflen);
-  if (connect_len > 0)
-  {
-    uart_send_string_blocking(USART_0, "MQTT Connect packet created!\n");
-  }
-  wifi_command_TCP_transmit(connect_buf, connect_len);
-
-  _delay_ms(5000);
-  WIFI_ERROR_MESSAGE_t subscribe_message = mqtt_subscribe_to_pump_command();
-
-  if (subscribe_message != WIFI_OK)
-  {
-    uart_send_string_blocking(USART_0, "Unable to send subscribe packet!\n");
-  }
-  else
-  {
-    uart_send_string_blocking(USART_0, "Sent subscribe packet!\n");
-  }
-
-
-  periodic_task_init_a(loop, 2000);
-  while (1)
-  {
-  }
-  // char disconnect_buf[200];
-  // int disconnect_buflen = sizeof(disconnect_buf);
-  // int disconnect_len =
-  //     create_mqtt_disconnect_packet(disconnect_buf, disconnect_buflen);
-  // if (disconnect_len > 0)
-  // {
-  //     printf("MQTT Disconnect packet created. Length: %d\n",
-  //            disconnect_len);
-  // }
+    
   return 0;
 }
