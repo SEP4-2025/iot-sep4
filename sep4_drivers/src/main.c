@@ -15,6 +15,7 @@
 #include "MQTTPacket.h"
 #include <string.h>
 #include "water_pump.h"
+#include "hc_sr04.h"
 
 static uint8_t _buff[100];
 // static char callback_buff[256];
@@ -265,14 +266,25 @@ WIFI_ERROR_MESSAGE_t mqtt_subscribe_to_pump_command()
 // }
 
 int main() {
-  pump_init();
-    
-  sei();
-    
-  pump_run(5000);
+  uart_init(USART_0, 9600, console_rx);
+  uart_send_string_blocking(USART_0, "Hello from main!\n");
+
+  // pump_init();
+  // pump_run(5000);
+
+  hc_sr04_init();
+  uint16_t test = hc_sr04_takeMeasurement();
+
+  char msg_buf[250];
+  sprintf(msg_buf, "%d\n", test);
+  uart_send_string_blocking(USART_0, msg_buf);
     
   while(1) {
-    
+    test = hc_sr04_takeMeasurement();
+    sprintf(msg_buf, "%d\n", test);
+    uart_send_string_blocking(USART_0, msg_buf);
+      
+    _delay_ms(2000);
   }
     
   return 0;

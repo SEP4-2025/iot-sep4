@@ -1,9 +1,9 @@
 #pragma once
 #include <stdint.h>
 
-// Define pump control pin on port H (connected to Timer 4)
-// Using PH3/OC4A (Timer 4 Output Compare A) on J8-2
-#define PUMP_PIN PH3
+// Define pump control pin on port C (connected to Timer 4)
+// Using PC7/OC4A (Timer 4 Output Compare A) on J8-2
+#define PUMP_PIN PC7
 
 /**
  * Initialize the water pump control
@@ -27,3 +27,8 @@ void pump_stop(void);
  * @return 1 if pump is running, 0 otherwise
  */
 uint8_t pump_is_running(void);
+
+/**
+ * Timer interrupt handler to stop the pump after the specified duration
+ */
+void pump_timer_interrupt_handler(void);
