@@ -42,83 +42,87 @@ void console_rx(uint8_t _rx)
 
 void my_event_cb()
 {
-    // Check if we have valid data
-    if (callback_buff[0] == 0) {
-        uart_send_string_blocking(USART_0, "Empty buffer received\n");
-        return;
-    }
+  // Check if we have valid data
+  if (callback_buff[0] == 0)
+  {
+    uart_send_string_blocking(USART_0, "Empty buffer received\n");
+    return;
+  }
 
-    // Extract MQTT packet type from first byte
-    unsigned char packet_type = (callback_buff[0] >> 4) & 0x0F;
-    
-    // Print packet type in a meaningful way
-    char msg_buf[250];
-    sprintf(msg_buf, "MQTT packet received - Type: %d\n", packet_type);
+  // Extract MQTT packet type from first byte
+  unsigned char packet_type = (callback_buff[0] >> 4) & 0x0F;
+
+  // Print packet type in a meaningful way
+  char msg_buf[250];
+  sprintf(msg_buf, "MQTT packet received - Type: %d\n", packet_type);
+  uart_send_string_blocking(USART_0, msg_buf);
+
+  // Process specific MQTT packet types
+  switch (packet_type)
+  {
+  case 2: // MQTT CONNACK
+    uart_send_string_blocking(USART_0, "RECEIVED CONNACK\n");
+    break;
+
+  case 3: // MQTT PUBLISH
+  {
+    unsigned char dup = 0;
+    int qos = 0;
+    unsigned char retained = 0;
+    unsigned short packetid = 0;
+    MQTTString topicName = {0};
+    unsigned char *payload = NULL;
+    int payloadlen = 0;
+
+    int result = MQTTDeserialize_publish(&dup, &qos, &retained, &packetid,
+                                         &topicName, &payload, &payloadlen,
+                                         callback_buff, 256);
+
+    if (result == 1)
+    {
+      // Create a null-terminated string for the topic
+      char topic[64] = {0};
+      if (topicName.lenstring.len < sizeof(topic))
+      {
+        memcpy(topic, topicName.lenstring.data, topicName.lenstring.len);
+        topic[topicName.lenstring.len] = '\0';
+      }
+
+      // Create a null-terminated string for the payload
+      char payload_str[128] = {0};
+      if (payloadlen < sizeof(payload_str))
+      {
+        memcpy(payload_str, payload, payloadlen);
+        payload_str[payloadlen] = '\0';
+      }
+
+      sprintf(msg_buf, "PUBLISH: Topic='%s', Payload='%s', QoS=%d\n",
+              topic, payload_str, qos);
+      uart_send_string_blocking(USART_0, msg_buf);
+
+      // Check if this is the pump command topic
+      if (strcmp(topic, "pump:command") == 0)
+      {
+        uart_send_string_blocking(USART_0, "Command received: Turn pump ON\n");
+
+        // Add code to turn on the pump here
+      }
+    }
+    else
+    {
+      uart_send_string_blocking(USART_0, "Failed to parse PUBLISH packet\n");
+    }
+    break;
+  }
+
+  case 9: // MQTT SUBACK
+    uart_send_string_blocking(USART_0, "RECEIVED SUBACK\n");
+    break;
+
+  default:
+    sprintf(msg_buf, "Unhandled packet type: %d\n", packet_type);
     uart_send_string_blocking(USART_0, msg_buf);
-  
-    
-    // Process specific MQTT packet types
-    switch (packet_type) {
-        case 2: // MQTT CONNACK
-            uart_send_string_blocking(USART_0, "RECEIVED CONNACK\n");
-            break;
-
-            case 3: // MQTT PUBLISH
-            {
-                unsigned char dup = 0;
-                int qos = 0;
-                unsigned char retained = 0;
-                unsigned short packetid = 0;
-                MQTTString topicName = {0};
-                unsigned char* payload = NULL;
-                int payloadlen = 0;
-                
-                int result = MQTTDeserialize_publish(&dup, &qos, &retained, &packetid, 
-                                                  &topicName, &payload, &payloadlen, 
-                                                  callback_buff, 256);
-                
-                if (result == 1) {
-                    // Create a null-terminated string for the topic
-                    char topic[64] = {0};
-                    if (topicName.lenstring.len < sizeof(topic)) {
-                        memcpy(topic, topicName.lenstring.data, topicName.lenstring.len);
-                        topic[topicName.lenstring.len] = '\0';
-                    }
-                    
-                    // Create a null-terminated string for the payload
-                    char payload_str[128] = {0};
-                    if (payloadlen < sizeof(payload_str)) {
-                        memcpy(payload_str, payload, payloadlen);
-                        payload_str[payloadlen] = '\0';
-                    }
-                    
-                    sprintf(msg_buf, "PUBLISH: Topic='%s', Payload='%s', QoS=%d\n", 
-                            topic, payload_str, qos);
-                    uart_send_string_blocking(USART_0, msg_buf);
-                    
-                    // Check if this is the pump command topic
-                    if (strcmp(topic, "pump:command") == 0) {
-                        if (strcmp(payload_str, "start") == 0) {
-                            uart_send_string_blocking(USART_0, "Command received: Turn pump ON\n");
-
-                            // Add code to turn on the pump here
-                        }
-                    }
-                } else {
-                    uart_send_string_blocking(USART_0, "Failed to parse PUBLISH packet\n");
-                }
-                break;
-            }
-    
-            
-        case 9: // MQTT SUBACK
-            uart_send_string_blocking(USART_0, "RECEIVED SUBACK\n");
-            break;
-            
-        default:
-            sprintf(msg_buf, "Unhandled packet type: %d\n", packet_type);
-            uart_send_string_blocking(USART_0, msg_buf);
-    }
+  }
 }
 
 /**
@@ -189,7 +193,6 @@ WIFI_ERROR_MESSAGE_t mqtt_subscribe_to_pump_command()
   return wifi_command_TCP_transmit(buffer, len);
 }
 
-
 int main()
 {
   // Init wifi and light
@@ -245,7 +248,6 @@ int main()
   {
     uart_send_string_blocking(USART_0, "Sent subscribe packet!\n");
   }
-
 
   periodic_task_init_a(loop, 2000);
   while (1)
