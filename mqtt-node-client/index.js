@@ -14,6 +14,8 @@ client.on("connect", () => {
   client.subscribe(
     {
       "light:reading": { qos: 0 },
+      "soil:reading": { qos: 0 },
+      "dht:reading": { qos: 0 },
       "pump:started": { qos: 0 },
       "pump:stopped": { qos: 0 }
     },
@@ -26,48 +28,69 @@ client.on("connect", () => {
     }
   );
 
-  // setTimeout(() => {
-  //   client.publish("pump:command", "start", { qos: 1, retain: true }, (err) => {
-  //     if (err) {
-  //       console.error("Failed to publish message:", err);
-  //     } else {
-  //       console.log(`Sent 'start' command to 'pump:command'`);
-  //     }
-  //   });
-  // }, 20000);
-
   setTimeout(() => {
-    let count = 0;
-    const interval = setInterval(() => {
-      if (count >= 5) {
-        clearInterval(interval);
-        console.log("Finished sending 5 messages.");
-        return;
+    client.publish("pump:command", "20000", { qos: 1}, (err) => {
+      if (err) {
+        console.error("Failed to publish message:", err);
+      } else {
+        console.log(`Sent 'start' command to 'pump:command'`);
       }
-
-      const message = "start"
-      client.publish("pump:command", message, { qos: 1, retain: true }, (err) => {
+    });
+    setTimeout(() => {
+      client.publish("pump:command_stop", "force stop the pump", { qos: 1}, (err) => {
         if (err) {
-          console.error(`Failed to publish message ${count + 1}:`, err);
+          console.error("Failed to publish force stop pump message:", err);
         } else {
-          console.log(`Published '${message}' to 'pump:command'`);
+          console.log(`Sent 'force stop' command to 'pump:command'`);
         }
       });
-
-      count++;
-    }, 1000); // Send every 1 second
+    }, 3000)
+    setTimeout(() => {
+      client.publish("pump:command", "5000", { qos: 1}, (err) => {
+        if (err) {
+          console.error("Failed to publish message:", err);
+        } else {
+          console.log(`Sent 'start' command to 'pump:command'`);
+        }
+      });
+    }, 6000)
   }, 20000);
+
+  // setTimeout(() => {
+  //   let count = 0;
+  //   const interval = setInterval(() => {
+  //     if (count >= 5) {
+  //       clearInterval(interval);
+  //       console.log("Finished sending 5 messages.");
+  //       return;
+  //     }
+
+  //     const message = "start"
+  //     client.publish("pump:command", message, { qos: 1, retain: true }, (err) => {
+  //       if (err) {
+  //         console.error(`Failed to publish message ${count + 1}:`, err);
+  //       } else {
+  //         console.log(`Published '${message}' to 'pump:command'`);
+  //       }
+  //     });
+
+  //     count++;
+  //   }, 1000); // Send every 1 second
+  // }, 20000);
 
   client.on("message", (topic, message) => {
     const msg = message.toString();
-    console.log("entered in client on message")
-  
+
     if (topic === "light:reading") {
       console.log("Light level:", msg);
     } else if (topic === "pump:started") {
       console.log("Pump started confirmation:", msg);
     } else if (topic === "pump:stopped") {
       console.log("Pump stopped confirmation:", msg);
+    } else if (topic === "dht:reading") {
+      console.log(msg);
+    } else if (topic === "soil:reading") {
+      console.log(msg);
     } else {
       console.log("Unknown topic:", topic, msg);
     }

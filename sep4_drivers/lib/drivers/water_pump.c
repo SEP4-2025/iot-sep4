@@ -63,6 +63,7 @@ uint8_t pump_run(uint32_t duration_ms) {
     
     // Set PC7 high to turn on the pump
     PORTC |= (1 << PUMP_PIN);
+    send_pump_status("pump:started", "pump started");
     
     sei();  // Re-enable interrupts
     return 1;
@@ -104,6 +105,7 @@ ISR(TIMER4_COMPA_vect) {
             // Set PC7 low to turn off the pump
             PORTC &= ~(1 << PUMP_PIN);
             pump_running = 0;  // Mark pump as stopped
+            send_pump_status("pump:stopped", "pump stopped");
         }
     }
 }
