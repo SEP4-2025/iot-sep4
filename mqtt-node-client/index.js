@@ -14,6 +14,8 @@ client.on("connect", () => {
   client.subscribe(
     {
       "light:reading": { qos: 0 },
+      "soil:reading": { qos: 0 },
+      "dht:reading": { qos: 0 },
       "pump:started": { qos: 0 },
       "pump:stopped": { qos: 0 }
     },
@@ -60,14 +62,17 @@ client.on("connect", () => {
 
   client.on("message", (topic, message) => {
     const msg = message.toString();
-    console.log("entered in client on message")
-  
+
     if (topic === "light:reading") {
       console.log("Light level:", msg);
     } else if (topic === "pump:started") {
       console.log("Pump started confirmation:", msg);
     } else if (topic === "pump:stopped") {
       console.log("Pump stopped confirmation:", msg);
+    } else if (topic === "dht:reading") {
+      console.log(msg);
+    } else if (topic === "soil:reading") {
+      console.log(msg);
     } else {
       console.log("Unknown topic:", topic, msg);
     }
