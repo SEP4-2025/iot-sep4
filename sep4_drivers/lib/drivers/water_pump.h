@@ -32,3 +32,4 @@ uint8_t pump_is_running(void);
  * Timer interrupt handler to stop the pump after the specified duration
  */
 void pump_timer_interrupt_handler(void);
+uint8_t pump_start(void);

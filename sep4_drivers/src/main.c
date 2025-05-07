@@ -104,6 +104,12 @@ void my_event_cb()
         uart_send_string_blocking(USART_0, "Command received: Turn pump OFF\n");
         pump_stop();
       }
+      else if (strcmp(topic, "pump:command_start") == 0)
+      {
+        uart_send_string_blocking(USART_0, "Command received: Turn pump ON indefinitely\n");
+        pump_start();
+      }
+      
     }
     else
     {
@@ -157,6 +163,17 @@ int main()
   // subscribe to pump stop
   WIFI_ERROR_MESSAGE_t subscribe_stop_message = mqtt_subscribe_to_topic("pump:command_stop", 2);
   if (subscribe_stop_message != WIFI_OK)
+  {
+    uart_send_string_blocking(USART_0, "Unable to send subscribe packet!\n");
+  }
+  else
+  {
+    uart_send_string_blocking(USART_0, "Sent subscribe packet!\n");
+  }
+
+  // subscribe to pump start
+  WIFI_ERROR_MESSAGE_t subscribe_start_message = mqtt_subscribe_to_topic("pump:command_start", 3);
+  if (subscribe_start_message != WIFI_OK)
   {
     uart_send_string_blocking(USART_0, "Unable to send subscribe packet!\n");
   }

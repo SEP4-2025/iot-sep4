@@ -29,13 +29,40 @@ client.on("connect", () => {
   );
 
   setTimeout(() => {
-    client.publish("pump:command", "20000", { qos: 1}, (err) => {
+    // client.publish("pump:command", "20000", { qos: 1}, (err) => {
+    //   if (err) {
+    //     console.error("Failed to publish message:", err);
+    //   } else {
+    //     console.log(`Sent 'start' command to 'pump:command'`);
+    //   }
+    // });
+    // setTimeout(() => {
+    //   client.publish("pump:command_stop", "force stop the pump", { qos: 1}, (err) => {
+    //     if (err) {
+    //       console.error("Failed to publish force stop pump message:", err);
+    //     } else {
+    //       console.log(`Sent 'force stop' command to 'pump:command'`);
+    //     }
+    //   });
+    // }, 3000)
+    // setTimeout(() => {
+    //   client.publish("pump:command", "5000", { qos: 1}, (err) => {
+    //     if (err) {
+    //       console.error("Failed to publish message:", err);
+    //     } else {
+    //       console.log(`Sent 'start' command to 'pump:command'`);
+    //     }
+    //   });
+    // }, 6000)
+
+    client.publish("pump:command_start", "start the pump", { qos: 1}, (err) => {
       if (err) {
         console.error("Failed to publish message:", err);
       } else {
-        console.log(`Sent 'start' command to 'pump:command'`);
+        console.log('sent pump command start');
       }
     });
+    
     setTimeout(() => {
       client.publish("pump:command_stop", "force stop the pump", { qos: 1}, (err) => {
         if (err) {
@@ -44,16 +71,7 @@ client.on("connect", () => {
           console.log(`Sent 'force stop' command to 'pump:command'`);
         }
       });
-    }, 3000)
-    setTimeout(() => {
-      client.publish("pump:command", "5000", { qos: 1}, (err) => {
-        if (err) {
-          console.error("Failed to publish message:", err);
-        } else {
-          console.log(`Sent 'start' command to 'pump:command'`);
-        }
-      });
-    }, 6000)
+    }, 5000)
   }, 20000);
 
   // setTimeout(() => {

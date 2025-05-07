@@ -94,6 +94,26 @@ uint8_t pump_is_running(void) {
 }
 
 /**
+ * Turn the pump on indefinitely (no timer)
+ * @return 1 if pump was started, 0 if pump was already running
+ */
+uint8_t pump_start(void) {
+    // Check if pump is already running
+    if (pump_running) {
+        return 0;
+    }
+    
+    // Set the pump as running
+    pump_running = 1;
+    
+    // Set PC7 high to turn on the pump
+    PORTC |= (1 << PUMP_PIN);
+    send_pump_status("pump:started", "pump started");
+    
+    return 1;
+}
+
+/**
  * Timer interrupt handler to stop the pump after the specified duration
  */
 ISR(TIMER4_COMPA_vect) {
