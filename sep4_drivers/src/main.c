@@ -14,8 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <util/delay.h>
-#include "MQTTPacket.h"
 #include <string.h>
+#include "MQTTPacket.h"
 #include "console/console_operations.h"
 
 static unsigned char callback_buff[256];
@@ -39,11 +39,11 @@ void my_event_cb()
 
   switch (packet_type)
   {
-  case 2: // MQTT CONNACK
+  case 2:
     uart_send_string_blocking(USART_0, "RECEIVED CONNACK\n");
     break;
 
-  case 3: // MQTT PUBLISH
+  case 3:
   {
     unsigned char dup = 0;
     int qos = 0;
@@ -117,7 +117,7 @@ int main()
   initialize_system();
 
   // Connect to network and MQTT broker
-  if (setup_network_connection("Marius iPhone", "password123", "172.20.10.4", 1883,
+  if (setup_network_connection("Marius iPhone", "password123", "172.20.10.11", 1883,
                                my_event_cb, callback_buff) != WIFI_OK)
   {
     return -1;
