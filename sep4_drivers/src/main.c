@@ -147,7 +147,7 @@ int main()
     return -1;
   }
 
-  _delay_ms(5000);
+  _delay_ms(2000);
 
   // subscribe to pump
   WIFI_ERROR_MESSAGE_t subscribe_message = mqtt_subscribe_to_topic("pump:command", 1);
@@ -160,6 +160,7 @@ int main()
     uart_send_string_blocking(USART_0, "Sent subscribe packet!\n");
   }
 
+  _delay_ms(2000);
   // subscribe to pump stop
   WIFI_ERROR_MESSAGE_t subscribe_stop_message = mqtt_subscribe_to_topic("pump:command_stop", 2);
   if (subscribe_stop_message != WIFI_OK)
@@ -171,6 +172,7 @@ int main()
     uart_send_string_blocking(USART_0, "Sent subscribe packet!\n");
   }
 
+  _delay_ms(2000);
   // subscribe to pump start
   WIFI_ERROR_MESSAGE_t subscribe_start_message = mqtt_subscribe_to_topic("pump:command_start", 3);
   if (subscribe_start_message != WIFI_OK)

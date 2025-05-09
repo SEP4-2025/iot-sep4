@@ -29,7 +29,7 @@ client.on("connect", () => {
   );
 
   setTimeout(() => {
-    // client.publish("pump:command", "20000", { qos: 1}, (err) => {
+    // client.publish("pump:command", "5000", { qos: 1}, (err) => {
     //   if (err) {
     //     console.error("Failed to publish message:", err);
     //   } else {
