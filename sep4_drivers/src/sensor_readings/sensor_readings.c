@@ -90,6 +90,8 @@ int send_temperature_humidity_reading(void) {
 
     int temp_result = wifi_command_TCP_transmit(transmit_buf, temperature_packet_len);
 
+    _delay_ms(500);
+
     char humidity_topic[] = "air/humidity";
     char humidity_payload[50];
     sprintf(humidity_payload, "%d.%d", humidity_integer, humidity_decimal);
