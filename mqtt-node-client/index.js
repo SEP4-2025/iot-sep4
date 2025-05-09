@@ -15,7 +15,8 @@ client.on("connect", () => {
     {
       "light/reading": { qos: 0 },
       "soil/reading": { qos: 0 },
-      "dht/reading": { qos: 0 },
+      "air/temperature": { qos: 0 },
+      "air/humidity": { qos: 0 },
       "pump/started": { qos: 0 },
       "pump/stopped": { qos: 0 },
     },
@@ -115,10 +116,10 @@ client.on("connect", () => {
       console.log("Pump started confirmation:", msg);
     } else if (topic === "pump/stopped") {
       console.log("Pump stopped confirmation:", msg);
-    } else if (topic === "dht/reading") {
-      const [humidity, temperature] = msg.split(",");
-      console.log("Air humidity:", humidity);
-      console.log("Air temperature:", temperature);
+    } else if (topic === "air/temperature") {
+      console.log("Air temperature:", msg);
+    } else if (topic === "air/humidity") {
+      console.log("Air humidity:", msg);
     } else if (topic === "soil/reading") {
       console.log("Soil moisture level:", msg);
     } else {

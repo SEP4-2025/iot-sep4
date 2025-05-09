@@ -7,6 +7,8 @@
 #include "wifi.h"
 #include <stdio.h>
 #include <string.h>
+#include <avr/interrupt.h>
+#include <util/delay.h>
 
 int calculate_moisture_percentage(int sensor_value) {
   int moisture_percentage = 100 - ((sensor_value - 200) * 100) / (505 - 200);
@@ -45,28 +47,61 @@ int send_soil_moisture_reading(void) {
   return wifi_command_TCP_transmit(transmit_buf, transmit_len);
 }
 
+// int send_temperature_humidity_reading(void) {
+//   char transmit_temp_buf[100];
+//   int transmit_temp_buflen = sizeof(transmit_temp_buf);
+//   char dht_topic[] = "dht/reading";
+
+//   uint8_t humidity_integer = 0;
+//   uint8_t humidity_decimal = 0;
+//   uint8_t temperature_integer = 0;
+//   uint8_t temperature_decimal = 0;
+
+//   dht11_get(&humidity_integer, &humidity_decimal, &temperature_integer,
+//             &temperature_decimal);
+
+//   char dht_payload[100];
+//   sprintf(dht_payload, "%d.%d,%d.%d", humidity_integer, humidity_decimal,
+//           temperature_integer, temperature_decimal);
+
+//   int transmit_len = create_mqtt_transmit_packet(
+//       dht_topic, dht_payload, transmit_temp_buf, transmit_temp_buflen);
+
+//   return wifi_command_TCP_transmit(transmit_temp_buf, transmit_len);
+// }
+
 int send_temperature_humidity_reading(void) {
-  char transmit_temp_buf[100];
-  int transmit_temp_buflen = sizeof(transmit_temp_buf);
-  char dht_topic[] = "dht/reading";
+    char transmit_buf[100];
+    int transmit_buflen = sizeof(transmit_buf);
 
-  uint8_t humidity_integer = 0;
-  uint8_t humidity_decimal = 0;
-  uint8_t temperature_integer = 0;
-  uint8_t temperature_decimal = 0;
+    uint8_t humidity_integer = 0;
+    uint8_t humidity_decimal = 0;
+    uint8_t temperature_integer = 0;
+    uint8_t temperature_decimal = 0;
 
-  dht11_get(&humidity_integer, &humidity_decimal, &temperature_integer,
-            &temperature_decimal);
+    dht11_get(&humidity_integer, &humidity_decimal, &temperature_integer, &temperature_decimal);
 
-  char dht_payload[100];
-  sprintf(dht_payload, "%d.%d,%d.%d", humidity_integer, humidity_decimal,
-          temperature_integer, temperature_decimal);
+    char temperature_topic[] = "air/temperature";
+    char temperature_payload[50];
+    sprintf(temperature_payload, "%d.%d", temperature_integer, temperature_decimal);
 
-  int transmit_len = create_mqtt_transmit_packet(
-      dht_topic, dht_payload, transmit_temp_buf, transmit_temp_buflen);
+    int temperature_packet_len = create_mqtt_transmit_packet(
+        temperature_topic, temperature_payload, transmit_buf, transmit_buflen);
 
-  return wifi_command_TCP_transmit(transmit_temp_buf, transmit_len);
+    int temp_result = wifi_command_TCP_transmit(transmit_buf, temperature_packet_len);
+
+    char humidity_topic[] = "air/humidity";
+    char humidity_payload[50];
+    sprintf(humidity_payload, "%d.%d", humidity_integer, humidity_decimal);
+
+    int humidity_packet_len = create_mqtt_transmit_packet(
+        humidity_topic, humidity_payload, transmit_buf, transmit_buflen);
+
+    int humidity_result = wifi_command_TCP_transmit(transmit_buf, humidity_packet_len);
+
+    return (temp_result == 0 && humidity_result == 0) ? 0 : -1;
 }
+
 
 int send_light_reading(void) {
   char transmit_buf[100];
