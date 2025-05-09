@@ -13,11 +13,11 @@ client.on("connect", () => {
 
   client.subscribe(
     {
-      "light:reading": { qos: 0 },
-      "soil:reading": { qos: 0 },
-      "dht:reading": { qos: 0 },
-      "pump:started": { qos: 0 },
-      "pump:stopped": { qos: 0 }
+      "light/reading": { qos: 0 },
+      "soil/reading": { qos: 0 },
+      "dht/reading": { qos: 0 },
+      "pump/started": { qos: 0 },
+      "pump/stopped": { qos: 0 }
     },
     (err) => {
       if (err) {
@@ -29,7 +29,7 @@ client.on("connect", () => {
   );
 
   setTimeout(() => {
-    // client.publish("pump:command", "5000", { qos: 1}, (err) => {
+    // client.publish("pump/command", "5000", { qos: 1}, (err) => {
     //   if (err) {
     //     console.error("Failed to publish message:", err);
     //   } else {
@@ -37,7 +37,7 @@ client.on("connect", () => {
     //   }
     // });
     // setTimeout(() => {
-    //   client.publish("pump:command_stop", "force stop the pump", { qos: 1}, (err) => {
+    //   client.publish("pump/command_stop", "force stop the pump", { qos: 1}, (err) => {
     //     if (err) {
     //       console.error("Failed to publish force stop pump message:", err);
     //     } else {
@@ -46,7 +46,7 @@ client.on("connect", () => {
     //   });
     // }, 3000)
     // setTimeout(() => {
-    //   client.publish("pump:command", "5000", { qos: 1}, (err) => {
+    //   client.publish("pump/command", "5000", { qos: 1}, (err) => {
     //     if (err) {
     //       console.error("Failed to publish message:", err);
     //     } else {
@@ -55,7 +55,7 @@ client.on("connect", () => {
     //   });
     // }, 6000)
 
-    client.publish("pump:command_start", "start the pump", { qos: 1}, (err) => {
+    client.publish("pump/command_start", "start the pump", { qos: 1}, (err) => {
       if (err) {
         console.error("Failed to publish message:", err);
       } else {
@@ -64,7 +64,7 @@ client.on("connect", () => {
     });
     
     setTimeout(() => {
-      client.publish("pump:command_stop", "force stop the pump", { qos: 1}, (err) => {
+      client.publish("pump/command_stop", "force stop the pump", { qos: 1}, (err) => {
         if (err) {
           console.error("Failed to publish force stop pump message:", err);
         } else {
@@ -84,7 +84,7 @@ client.on("connect", () => {
   //     }
 
   //     const message = "start"
-  //     client.publish("pump:command", message, { qos: 1, retain: true }, (err) => {
+  //     client.publish("pump/command", message, { qos: 1, retain: true }, (err) => {
   //       if (err) {
   //         console.error(`Failed to publish message ${count + 1}:`, err);
   //       } else {
@@ -99,15 +99,15 @@ client.on("connect", () => {
   client.on("message", (topic, message) => {
     const msg = message.toString();
 
-    if (topic === "light:reading") {
+    if (topic === "light/reading") {
       console.log("Light level:", msg);
-    } else if (topic === "pump:started") {
+    } else if (topic === "pump/started") {
       console.log("Pump started confirmation:", msg);
-    } else if (topic === "pump:stopped") {
+    } else if (topic === "pump/stopped") {
       console.log("Pump stopped confirmation:", msg);
-    } else if (topic === "dht:reading") {
+    } else if (topic === "dht/reading") {
       console.log(msg);
-    } else if (topic === "soil:reading") {
+    } else if (topic === "soil/reading") {
       console.log(msg);
     } else {
       console.log("Unknown topic:", topic, msg);

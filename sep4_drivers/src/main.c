@@ -82,7 +82,7 @@ void my_event_cb()
       uart_send_string_blocking(USART_0, msg_buf);
 
       // Check for pump topic
-      if (strcmp(topic, "pump:command") == 0)
+      if (strcmp(topic, "pump/command") == 0)
       {
         //convert message milliseconds string into int
         char *endptr;
@@ -99,12 +99,12 @@ void my_event_cb()
           pump_run(duration_ms);
         }
       } 
-      else if (strcmp(topic, "pump:command_stop") == 0)
+      else if (strcmp(topic, "pump/command_stop") == 0)
       {
         uart_send_string_blocking(USART_0, "Command received: Turn pump OFF\n");
         pump_stop();
       }
-      else if (strcmp(topic, "pump:command_start") == 0)
+      else if (strcmp(topic, "pump/command_start") == 0)
       {
         uart_send_string_blocking(USART_0, "Command received: Turn pump ON indefinitely\n");
         pump_start();
@@ -150,7 +150,7 @@ int main()
   _delay_ms(2000);
 
   // subscribe to pump
-  WIFI_ERROR_MESSAGE_t subscribe_message = mqtt_subscribe_to_topic("pump:command", 1);
+  WIFI_ERROR_MESSAGE_t subscribe_message = mqtt_subscribe_to_topic("pump/command", 1);
   if (subscribe_message != WIFI_OK)
   {
     uart_send_string_blocking(USART_0, "Unable to send subscribe packet!\n");
@@ -162,7 +162,7 @@ int main()
 
   _delay_ms(2000);
   // subscribe to pump stop
-  WIFI_ERROR_MESSAGE_t subscribe_stop_message = mqtt_subscribe_to_topic("pump:command_stop", 2);
+  WIFI_ERROR_MESSAGE_t subscribe_stop_message = mqtt_subscribe_to_topic("pump/command_stop", 2);
   if (subscribe_stop_message != WIFI_OK)
   {
     uart_send_string_blocking(USART_0, "Unable to send subscribe packet!\n");
@@ -174,7 +174,7 @@ int main()
 
   _delay_ms(2000);
   // subscribe to pump start
-  WIFI_ERROR_MESSAGE_t subscribe_start_message = mqtt_subscribe_to_topic("pump:command_start", 3);
+  WIFI_ERROR_MESSAGE_t subscribe_start_message = mqtt_subscribe_to_topic("pump/command_start", 3);
   if (subscribe_start_message != WIFI_OK)
   {
     uart_send_string_blocking(USART_0, "Unable to send subscribe packet!\n");
