@@ -1,9 +1,7 @@
 #include "display.h"
-#include "light.h"
 #include "mqtt/mqtt.h"
 #include "periodic_task.h"
 #include "servo.h"
-#include "soil.h"
 #include "uart.h"
 #include "wifi.h"
 #include "sensor_readings/sensor_readings.h"
@@ -16,6 +14,8 @@
 #include <util/delay.h>
 #include <string.h>
 #include "MQTTPacket.h"
+#include "water_pump.h"
+#include "hc_sr04.h"
 #include "console/console_operations.h"
 
 static unsigned char callback_buff[256];
@@ -82,10 +82,32 @@ void my_event_cb()
       // Check for pump topic
       if (strcmp(topic, "pump:command") == 0)
       {
-        uart_send_string_blocking(USART_0, "Command received: Turn pump ON\n");
+        //convert message milliseconds string into int
+        char *endptr;
+        int duration_ms = (int)strtol(payload, &endptr, 10);
 
-        // Pump code here
+        if (*endptr != '\0') {
+          uart_send_string_blocking(USART_0, "Invalid number!\n");
+        }
+        else {
+          char debug_msg[50];
+          sprintf(debug_msg, "Duration received: %d ms. Starting the pump...", duration_ms);
+          uart_send_string_blocking(USART_0, debug_msg);
+
+          pump_run(duration_ms);
+        }
+      } 
+      else if (strcmp(topic, "pump:command_stop") == 0)
+      {
+        uart_send_string_blocking(USART_0, "Command received: Turn pump OFF\n");
+        pump_stop();
       }
+      else if (strcmp(topic, "pump:command_start") == 0)
+      {
+        uart_send_string_blocking(USART_0, "Command received: Turn pump ON indefinitely\n");
+        pump_start();
+      }
+      
     }
     else
     {
@@ -123,11 +145,35 @@ int main()
     return -1;
   }
 
-  _delay_ms(5000);
+  _delay_ms(2000);
 
   // subscribe to pump
-  WIFI_ERROR_MESSAGE_t subscribe_message = mqtt_subscribe_to_pump_command();
+  WIFI_ERROR_MESSAGE_t subscribe_message = mqtt_subscribe_to_topic("pump:command", 1);
   if (subscribe_message != WIFI_OK)
+  {
+    uart_send_string_blocking(USART_0, "Unable to send subscribe packet!\n");
+  }
+  else
+  {
+    uart_send_string_blocking(USART_0, "Sent subscribe packet!\n");
+  }
+
+  _delay_ms(2000);
+  // subscribe to pump stop
+  WIFI_ERROR_MESSAGE_t subscribe_stop_message = mqtt_subscribe_to_topic("pump:command_stop", 2);
+  if (subscribe_stop_message != WIFI_OK)
+  {
+    uart_send_string_blocking(USART_0, "Unable to send subscribe packet!\n");
+  }
+  else
+  {
+    uart_send_string_blocking(USART_0, "Sent subscribe packet!\n");
+  }
+
+  _delay_ms(2000);
+  // subscribe to pump start
+  WIFI_ERROR_MESSAGE_t subscribe_start_message = mqtt_subscribe_to_topic("pump:command_start", 3);
+  if (subscribe_start_message != WIFI_OK)
   {
     uart_send_string_blocking(USART_0, "Unable to send subscribe packet!\n");
   }
@@ -144,3 +190,27 @@ int main()
 
   return 0;
 }
+// int main() {
+//   uart_init(USART_0, 9600, console_rx);
+//   uart_send_string_blocking(USART_0, "Hello from main!\n");
+
+//   // pump_init();
+//   // pump_run(5000);
+
+//   hc_sr04_init();
+//   uint16_t test = hc_sr04_takeMeasurement();
+
+//   char msg_buf[250];
+//   sprintf(msg_buf, "%d\n", test);
+//   uart_send_string_blocking(USART_0, msg_buf);
+    
+//   while(1) {
+//     test = hc_sr04_takeMeasurement();
+//     sprintf(msg_buf, "%d\n", test);
+//     uart_send_string_blocking(USART_0, msg_buf);
+      
+//     _delay_ms(2000);
+//   }
+    
+//   return 0;
+// }

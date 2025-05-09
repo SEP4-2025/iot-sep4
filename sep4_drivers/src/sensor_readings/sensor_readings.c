@@ -98,3 +98,16 @@ int send_light_reading(void)
 
     return wifi_command_TCP_transmit(transmit_buf, transmit_len);
 }
+
+int send_pump_status(const char *topic, const char *message)
+{
+    char transmit_buf[200];
+    int transmit_buflen = sizeof(transmit_buf);
+    char payload[150];
+    sprintf(payload, message);
+
+    int transmit_len = create_mqtt_transmit_packet(
+        topic, payload, transmit_buf, transmit_buflen);
+
+    return wifi_command_TCP_transmit(transmit_buf, transmit_len);
+}
