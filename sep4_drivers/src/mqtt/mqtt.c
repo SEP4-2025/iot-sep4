@@ -38,18 +38,16 @@ size_t create_mqtt_disconnect_packet(unsigned char *buf, size_t buflen)
   return len;
 }
 
-WIFI_ERROR_MESSAGE_t mqtt_subscribe_to_pump_command()
+WIFI_ERROR_MESSAGE_t mqtt_subscribe_to_topic(const char* topic_name, uint16_t packet_id)
 {
-  uint8_t buffer[128];
-  MQTTString topic = MQTTString_initializer;
-  topic.cstring = "pump:command";
-  uint16_t packetId = 1; // Can be incremented if you send multiple subscriptions
-  int qos = 1;           // QoS level 1 (as expected)
+    uint8_t buffer[128];
+    MQTTString topic = MQTTString_initializer;
+    topic.cstring = (char*)topic_name; 
+    int qos = 1;
 
-  int len = MQTTSerialize_subscribe(buffer, sizeof(buffer), 0, packetId, 1, &topic, &qos);
-  if (len <= 0)
-    return WIFI_FAIL;
+    int len = MQTTSerialize_subscribe(buffer, sizeof(buffer), 0, packet_id, 1, &topic, &qos);
+    if (len <= 0)
+        return WIFI_FAIL;
 
-  // Send the subscribe packet over TCP
-  return wifi_command_TCP_transmit(buffer, len);
+    return wifi_command_TCP_transmit(buffer, len);
 }

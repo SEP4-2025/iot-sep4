@@ -8,6 +8,7 @@
 #include "console/console_operations.h"
 #include <stdio.h>
 #include <string.h>
+#include "water_pump.h"
 
 void initialize_system(void)
 {
@@ -15,6 +16,7 @@ void initialize_system(void)
     light_init();
     soil_init();
     dht11_init();
+    pump_init();
     uart_init(USART_0, 9600, console_rx);
     uart_send_string_blocking(USART_0, "Hello from main!\n");
 }
