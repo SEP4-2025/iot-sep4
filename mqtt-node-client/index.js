@@ -1,7 +1,7 @@
 const mqtt = require("mqtt");
 const client = mqtt.connect("mqtt://34.27.128.90:1883");
 
-// .on connect -> waits until the connection is actually established    
+// .on connect -> waits until the connection is actually established
 client.on("connect", () => {
   // client.publish("pump/command", "start", { qos: 1, retain: true }, (err) => {
   //   if (err) {
@@ -17,7 +17,7 @@ client.on("connect", () => {
       "soil/reading": { qos: 0 },
       "dht/reading": { qos: 0 },
       "pump/started": { qos: 0 },
-      "pump/stopped": { qos: 0 }
+      "pump/stopped": { qos: 0 },
     },
     (err) => {
       if (err) {
@@ -25,7 +25,7 @@ client.on("connect", () => {
       } else {
         console.log("Subscribed to all relevant topics");
       }
-    }
+    },
   );
 
   setTimeout(() => {
@@ -55,23 +55,33 @@ client.on("connect", () => {
     //   });
     // }, 6000)
 
-    client.publish("pump/command_start", "start the pump", { qos: 1}, (err) => {
-      if (err) {
-        console.error("Failed to publish message:", err);
-      } else {
-        console.log('sent pump command start');
-      }
-    });
-    
-    setTimeout(() => {
-      client.publish("pump/command_stop", "force stop the pump", { qos: 1}, (err) => {
+    client.publish(
+      "pump/command_start",
+      "start the pump",
+      { qos: 1 },
+      (err) => {
         if (err) {
-          console.error("Failed to publish force stop pump message:", err);
+          console.error("Failed to publish message:", err);
         } else {
-          console.log(`Sent 'force stop' command to 'pump/command'`);
+          console.log("sent pump command start");
         }
-      });
-    }, 5000)
+      },
+    );
+
+    setTimeout(() => {
+      client.publish(
+        "pump/command_stop",
+        "force stop the pump",
+        { qos: 1 },
+        (err) => {
+          if (err) {
+            console.error("Failed to publish force stop pump message:", err);
+          } else {
+            console.log(`Sent 'force stop' command to 'pump/command'`);
+          }
+        },
+      );
+    }, 5000);
   }, 20000);
 
   // setTimeout(() => {
@@ -106,12 +116,13 @@ client.on("connect", () => {
     } else if (topic === "pump/stopped") {
       console.log("Pump stopped confirmation:", msg);
     } else if (topic === "dht/reading") {
-      console.log(msg);
+      const [humidity, temperature] = msg.split(",");
+      console.log("Air humidity:", humidity);
+      console.log("Air temperature:", temperature);
     } else if (topic === "soil/reading") {
-      console.log(msg);
+      console.log("Soil moisture level:", msg);
     } else {
       console.log("Unknown topic:", topic, msg);
     }
   });
 });
-

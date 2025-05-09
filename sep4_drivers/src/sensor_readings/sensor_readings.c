@@ -37,8 +37,7 @@ int send_soil_moisture_reading(void) {
   int moisture_percentage = calculate_moisture_percentage(soil_adc);
 
   char soil_payload[100];
-  sprintf(soil_payload, "Soil ADC Val: %d\nSoil Moisture: %d%%\n", soil_adc,
-          moisture_percentage);
+  sprintf(soil_payload, "%d", moisture_percentage);
 
   int transmit_len = create_mqtt_transmit_packet(soil_topic, soil_payload,
                                                  transmit_buf, transmit_buflen);
@@ -60,9 +59,8 @@ int send_temperature_humidity_reading(void) {
             &temperature_decimal);
 
   char dht_payload[100];
-  sprintf(dht_payload, "Humidity: %d.%d%%\nTemperature: %d.%d°C\n",
-          humidity_integer, humidity_decimal, temperature_integer,
-          temperature_decimal);
+  sprintf(dht_payload, "%d.%d,%d.%d", humidity_integer, humidity_decimal,
+          temperature_integer, temperature_decimal);
 
   int transmit_len = create_mqtt_transmit_packet(
       dht_topic, dht_payload, transmit_temp_buf, transmit_temp_buflen);
@@ -81,8 +79,7 @@ int send_light_reading(void) {
   int lux_int = (int)lux;
 
   char light_payload[100];
-  sprintf(light_payload, "Light ADC Val: %d\nLight Intensity: %d lux\n",
-          light_adc, lux_int);
+  sprintf(light_payload, "%d", lux_int);
 
   int transmit_len = create_mqtt_transmit_packet(light_topic, light_payload,
                                                  transmit_buf, transmit_buflen);
