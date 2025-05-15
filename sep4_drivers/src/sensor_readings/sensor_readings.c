@@ -104,7 +104,7 @@ int send_temperature_humidity_reading(void) {
 
     char humidity_topic[] = "air/humidity";
     char humidity_payload[50];
-    sprintf(humidity_payload, "%d.%d", humidity_integer, humidity_decimal);
+    sprintf(humidity_payload, "%d", humidity_integer);
 
     sprintf(log_buf, "Air humidity: %d\n", humidity_integer);
     uart_send_string_blocking(USART_0, log_buf);
