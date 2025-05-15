@@ -129,9 +129,17 @@ void my_event_cb()
 void loop()
 {
   send_temperature_humidity_reading();
-    _delay_ms(500);
+    // _delay_ms(500);
+  // send_soil_moisture_reading();
+    // _delay_ms(500);
+  // send_light_reading();
+}
+
+void loop2() {
   send_soil_moisture_reading();
-    _delay_ms(500);
+}
+
+void loop3() {
   send_light_reading();
 }
 
@@ -184,7 +192,9 @@ int main()
     uart_send_string_blocking(USART_0, "Sent subscribe packet!\n");
   }
 
-  periodic_task_init_a(loop, 2000);
+  periodic_task_init_a(loop, 30000);
+  periodic_task_init_b(loop2, 40000);
+  periodic_task_init_c(loop3, 50000);
 
   while (1)
   {

@@ -10,6 +10,8 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+char log_buf[250];
+
 int calculate_moisture_percentage(int sensor_value) {
   int moisture_percentage = 100 - ((sensor_value - 200) * 100) / (505 - 200);
 
@@ -40,6 +42,9 @@ int send_soil_moisture_reading(void) {
 
   char soil_payload[100];
   sprintf(soil_payload, "%d", moisture_percentage);
+
+  sprintf(log_buf, "Soil humidity: %d\n\%", moisture_percentage);
+  uart_send_string_blocking(USART_0, log_buf);
 
   int transmit_len = create_mqtt_transmit_packet(soil_topic, soil_payload,
                                                  transmit_buf, transmit_buflen);
@@ -83,7 +88,12 @@ int send_temperature_humidity_reading(void) {
 
     char temperature_topic[] = "air/temperature";
     char temperature_payload[50];
-    sprintf(temperature_payload, "%d.%d", temperature_integer, temperature_decimal);
+
+    sprintf(log_buf, "Air temperature: %d\n", temperature_integer);
+    uart_send_string_blocking(USART_0, log_buf);
+
+    // sprintf(temperature_payload, "%d.%d", temperature_integer, temperature_decimal);
+    sprintf(temperature_payload, "%d", temperature_integer);
 
     int temperature_packet_len = create_mqtt_transmit_packet(
         temperature_topic, temperature_payload, transmit_buf, transmit_buflen);
@@ -95,6 +105,9 @@ int send_temperature_humidity_reading(void) {
     char humidity_topic[] = "air/humidity";
     char humidity_payload[50];
     sprintf(humidity_payload, "%d.%d", humidity_integer, humidity_decimal);
+
+    sprintf(log_buf, "Air humidity: %d\n", humidity_integer);
+    uart_send_string_blocking(USART_0, log_buf);
 
     int humidity_packet_len = create_mqtt_transmit_packet(
         humidity_topic, humidity_payload, transmit_buf, transmit_buflen);
@@ -120,6 +133,9 @@ int send_light_reading(void) {
 
   int transmit_len = create_mqtt_transmit_packet(light_topic, light_payload,
                                                  transmit_buf, transmit_buflen);
+
+  sprintf(log_buf, "Light readings: %d\n", lux_int);
+  uart_send_string_blocking(USART_0, log_buf);
 
   return wifi_command_TCP_transmit(transmit_buf, transmit_len);
 }
