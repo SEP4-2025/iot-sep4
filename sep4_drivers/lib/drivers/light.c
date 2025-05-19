@@ -5,9 +5,11 @@
  * This file provides the implementation for initializing and reading the value from a photoresistor
  * connected to pin PK1 (ADC9) on the ATmega2560.
  *
- * @author Your Name
+ * @author Dimitar
  * @date September 2023, April 2025
  */
+
+ #ifndef WINDOWS_TEST
 
 #include "light.h"
 #include "includes.h"
@@ -69,3 +71,15 @@ uint16_t light_read(void)
 
     return adc_value;
 }
+#else
+ #include "light.h"
+ #include <stdint.h>
+ float calculate_light_intensity(uint16_t light_adc)
+ {
+     float voltage = light_adc * (5.0 / 1023.0);
+     float resistance = voltage * 10000.0 / (5.0 - voltage);
+     float lux = 500.0 / (resistance / 1000.0);
+ 
+     return lux;
+ }
+ #endif

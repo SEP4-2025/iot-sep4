@@ -8,6 +8,8 @@
  * @date 09-04-2025
  * @author Erland Larsen, VIA University College
  */
+
+ #ifndef WINDOWS_TEST
 #include "soil.h"
 #include "avr/io.h"
 
@@ -62,3 +64,24 @@ uint16_t soil_read()
     uint16_t adc_value = ADC;
     return adc_value;
 }
+#else
+#include "soil.h"
+#include <stdio.h>
+#include <string.h>
+
+int calculate_moisture_percentage(int sensor_value)
+{
+    int moisture_percentage = 100 - ((sensor_value - 200) * 100) / (505 - 200);
+
+    if (moisture_percentage > 100)
+    {
+        moisture_percentage = 100;
+    }
+    else if (moisture_percentage < 0)
+    {
+        moisture_percentage = 0;
+    }
+
+    return moisture_percentage;
+}
+#endif

@@ -1,3 +1,4 @@
+#ifndef WINDOWS_TEST
 #include "sensor_readings.h"
 #include "light.h"
 #include "soil.h"
@@ -73,3 +74,5 @@ int send_light_reading(void)
 
     return wifi_command_TCP_transmit(transmit_buf, transmit_len);
 }
+#else
+#endif

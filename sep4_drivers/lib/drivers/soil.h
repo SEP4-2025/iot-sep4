@@ -28,3 +28,6 @@ void soil_init();
  * @return 10-bit ADC value read from the Soil Moisture sensor
  */
 uint16_t soil_read();
+
+
+int calculate_moisture_percentage(int sensor_value);
