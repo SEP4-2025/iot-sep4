@@ -4,7 +4,7 @@
 #include "servo.h"
 #include "uart.h"
 #include "wifi.h"
-#include "sensor_readings/sensor_readings.h"
+#include "./sensor_readings.h"
 #include "setup/system_setup.h"
 #include <avr/interrupt.h>
 #include <stdbool.h>

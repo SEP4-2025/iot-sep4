@@ -1,3 +1,4 @@
+#ifndef WINDOWS_TEST
 #include "sensor_readings.h"
 #include "dht11.h"
 #include "light.h"
@@ -7,30 +8,11 @@
 #include "wifi.h"
 #include <stdio.h>
 #include <string.h>
+#include "dht11.h"
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
 char log_buf[250];
-
-int calculate_moisture_percentage(int sensor_value) {
-  int moisture_percentage = 100 - ((sensor_value - 200) * 100) / (505 - 200);
-
-  if (moisture_percentage > 100) {
-    moisture_percentage = 100;
-  } else if (moisture_percentage < 0) {
-    moisture_percentage = 0;
-  }
-
-  return moisture_percentage;
-}
-
-float calculate_light_intensity(uint16_t light_adc) {
-  float voltage = light_adc * (5.0 / 1023.0);
-  float resistance = voltage * 10000.0 / (5.0 - voltage);
-  float lux = 500.0 / (resistance / 1000.0);
-
-  return lux;
-}
 
 int send_soil_moisture_reading(void) {
   char transmit_buf[100];
@@ -151,3 +133,4 @@ int send_pump_status(const char *topic, const char *message) {
 
   return wifi_command_TCP_transmit(transmit_buf, transmit_len);
 }
+#endif

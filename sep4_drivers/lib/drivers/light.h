@@ -28,4 +28,4 @@ void light_init(void);
  * @return 10-bit ADC value read from the photoresistor
  */
 uint16_t light_read(void);
-
+float calculate_light_intensity(uint16_t light_adc);
