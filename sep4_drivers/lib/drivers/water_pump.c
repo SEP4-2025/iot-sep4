@@ -1,3 +1,4 @@
+#ifndef WINDOWS_TEST
 #include "water_pump.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -129,3 +130,4 @@ ISR(TIMER4_COMPA_vect) {
         }
     }
 }
+#endif
